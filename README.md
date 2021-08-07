@@ -1,4 +1,4 @@
-# Generador y Solucionador de Laberintos
+# Generador y Solucionador de Laberintos 🚀
 
 <p align="center">
     <img src="https://thumbs.dreamstime.com/b/c%C3%ADrculo-maze-vector-89466117.jpg" alt="Logo" width="80" height="80">
@@ -13,7 +13,7 @@
 
 
 
-## Funcionamiento
+## Funcionamiento ⚙️
 Usa cualquier tecla para pausar el juego cuando quieras, excepto la tecla CTRL
 Con el boton izquierdo del raton podras dibujar muros y con el derecho quitarlos
 El boton central del raton sirve para indicar un incio
