@@ -4,7 +4,7 @@
     <img src="https://thumbs.dreamstime.com/b/c%C3%ADrculo-maze-vector-89466117.jpg" alt="Logo" width="80" height="80">
 </p>
 
-## Construido con:
+## Construido con 🛠️
 * Python
     * Pygame
     * Numpy
