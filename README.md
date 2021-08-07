@@ -5,7 +5,7 @@
 </p>
 
 ## Construido con:
-*Python
+* [Dropwizard]
     *Pygame
     *Numpy
     *Random
