@@ -5,11 +5,11 @@
 </p>
 
 ## Construido con:
-* [Dropwizard]
-    *Pygame
-    *Numpy
-    *Random
-    *Time
+* Python
+    * Pygame
+    * Numpy
+    * Random
+    * Time
 
 
 
