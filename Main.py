@@ -48,15 +48,21 @@ screen = pygame.display.set_mode((width, height + 100))
 bg = 25, 25, 25
 screen.fill(bg)
 
-nxC, nyC = 45, 45
+nxC, nyC = 40, 40
 dimCW = width / nxC
 dimCH = height / nyC
 
 
 
-# Estado de las celdas: Muro=1 Vacio=0 Visitado=2 Inicio=3
+# Estado de las celdas: Muro=1 Vacio=0 Visitado=2 Inicio=3 Meta=4
 state = np.zeros((nxC, nyC))
 
+#Memo para encontrar el camino mas corto a una meta
+#Memo indicara por cada casilla quien fue su ultima sucesora de la siguiente manera:
+# 8=Arriba 4=Izquierda 6=Derecha 2=Abajo
+
+
+memo = np.zeros((nxC, nyC))
 
 pausa = True
 
@@ -99,7 +105,14 @@ while True:
 
     for tecla in evento:
         if tecla.type == pygame.KEYDOWN:
-            pausa = not pausa
+            if tecla.key == pygame.K_LCTRL:
+                posX, posY = pygame.mouse.get_pos()
+                celX, celY = int(np.floor(posX / dimCW)), int(np.floor(posY / dimCH))
+                if celY >= 0 and celY < nyC:
+                    state[celX, celY] = 4
+                    newState[celX, celY] = 4
+            else:
+                pausa = not pausa
 
         click = pygame.mouse.get_pressed()
 
@@ -132,6 +145,7 @@ while True:
             if celY >= 0 and celY < nyC:
                 state[celX, celY] = 3
                 newState[celX, celY] = 3
+                memo[celX,celY] = -1
 
 
 
@@ -139,23 +153,23 @@ while True:
         for y in range(0, nyC):
 
             if not pausa:
-                vecinos = 0
+                vecinos = [0,0,0,0]
 
                 if x + 1 < nxC:
                     if state[x + 1, y] == 2 or state[x + 1, y] == 3:
-                        vecinos += 1
+                        vecinos[2]=1
 
                 if y - 1 >= 0:
                     if state[x, y - 1] == 2 or state[x, y - 1] == 3:
-                        vecinos += 1
+                        vecinos[0]=1
 
                 if x - 1 >= 0:
                     if state[x - 1, y] == 2 or state[x - 1, y] == 3:
-                        vecinos += 1
+                        vecinos[1]=1
 
                 if y + 1 < nyC:
                     if state[x, y + 1] == 2 or state[x, y + 1] == 3:
-                        vecinos += 1
+                        vecinos[3]=1
 
                 '''
                 Las cosas que no cambian no hace falta implementarlas
@@ -173,11 +187,48 @@ while True:
                 '''
 
                 # Si eres vacio, seras visitado si hay algun adyacente, en caso contrario sigues siendo vacio
-                if state[x, y] == 0:
-                    if vecinos > 0:
+                if state[x, y] == 0 :
+                    if 1 in vecinos:
                         newState[x, y] = 2
+                        if vecinos[0]==1:
+                            memo[x,y]=2
+                        elif vecinos[1]==1:
+                            memo[x,y]=4
+                        elif vecinos[2]==1:
+                            memo[x,y]=6
+                        elif vecinos[3]==1:
+                            memo[x,y]=8
                     else:
                         newState[x, y] = 0
+
+                #Si eres la meta y se ha visitado algun adyacente has llegado a la meta
+                if state[x,y] == 4:
+                    if 1 in vecinos:
+                        if vecinos[0] == 1:
+                            memo[x, y] = 2
+                        elif vecinos[1] == 1:
+                            memo[x, y] = 4
+                        elif vecinos[2] == 1:
+                            memo[x, y] = 6
+                        elif vecinos[3] == 1:
+                            memo[x, y] = 8
+                        pausa = True
+                        actualX = x
+                        actualY = y
+                        while memo[actualX,actualY] != -1:
+                            direccion = memo[actualX,actualY]
+                            if direccion == 2:
+                                actualY -=1
+                            elif direccion == 4:
+                                actualX -=1
+                            elif direccion == 6:
+                                actualX +=1
+                            elif direccion == 8:
+                                actualY +=1
+
+                            if state[actualX,actualY]!=3:
+                                newState[actualX,actualY]=5
+
 
             poly = [(x * dimCW, y * dimCH),
                     ((x + 1) * dimCW, y * dimCH),
@@ -193,6 +244,10 @@ while True:
                 pygame.draw.polygon(screen, (255, 128, 0), poly, width=0)
             if state[x, y] == 3:
                 pygame.draw.polygon(screen, (0, 51, 204), poly, width=0)
+            if state[x, y] == 4:
+                pygame.draw.polygon(screen, (75, 151, 64), poly, width=0)
+            if state[x, y] == 5:
+                pygame.draw.polygon(screen, (175, 51, 164), poly, width=0)
 
     state = np.copy(newState)
 
